@@ -28,36 +28,5 @@ Vector2f Object::getPosition()
 
 void Object::draw(RenderWindow& window)
 {	
-	if (state == 0)
-	{
-		sprite.setTexture(textures[0]);
-		heading = -1;
-	}
-	if (state == 1) 
-	{
-		sprite.setScale(heading, 1.f);
-		sprite.setTexture(textures[1]);
-	}
-	if (state == 2) 
-	{
-		sprite.setTexture(textures[2]);
-	}
-	if (state == 3) 
-	{
-		sprite.setTexture(textures[3]);
-	}
-	if (state == 4) 
-	{
-		sprite.setScale(heading, 1.f);
-		sprite.setTexture(textures[1]);
-	}
-	if (state == 5)
-	{
-		sprite.setTexture(textures[2]);
-	}
-	if (state == 6)
-	{
-		sprite.setTexture(textures[3]);
-	}
 	window.draw(sprite);
 }

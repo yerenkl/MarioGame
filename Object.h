@@ -7,7 +7,6 @@ protected:
 	RenderWindow* window;
 	int state;
 	int heading;
-private:
 	Sprite sprite;
 	Vector2f pos;
 public:

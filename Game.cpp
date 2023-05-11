@@ -4,7 +4,6 @@
 void Game::drawBackground(RenderWindow& window)
 {
     int flag = 0;
-
     Textures[0].loadFromFile("./assets/brick.png");
     Assets[0].setTexture(Textures[0]);
     
@@ -35,9 +34,41 @@ void Game::drawBackground(RenderWindow& window)
     {
         // check all the window's events that were triggered since the last iteration of the loop
         Event event;
+        window.clear();
+
+        for (int x = 1; x < 6; x++)
+        {
+            window.draw(Assets[x]);
+        }
+
+        for (int x = 0; x < 16; x++)
+        {
+            Assets[0].setPosition(Vector2f(WINDOW_WIDTH / 2 - 240 + x * 30, WINDOW_HEIGHT - 494));
+            window.draw(Assets[0]);
+            if (x < 12)
+            {
+                Assets[0].setPosition(Vector2f(x * 30, WINDOW_HEIGHT - 294));
+                window.draw(Assets[0]);
+                Assets[0].setPosition(Vector2f(WINDOW_WIDTH - 30 - (x * 30), WINDOW_HEIGHT - 294));
+                window.draw(Assets[0]);
+            }
+            if (x < 4) {
+                Assets[0].setPosition(Vector2f(WINDOW_WIDTH - 30 - (x * 30), WINDOW_HEIGHT - 454));
+                window.draw(Assets[0]);
+                Assets[0].setPosition(Vector2f((x * 30), WINDOW_HEIGHT - 454));
+                window.draw(Assets[0]);
+            }
+            if (x < 14) {
+                Assets[0].setPosition(Vector2f(WINDOW_WIDTH - 30 - (x * 30), WINDOW_HEIGHT - 694));
+                window.draw(Assets[0]);
+                Assets[0].setPosition(Vector2f((x * 30), WINDOW_HEIGHT - 694));
+                window.draw(Assets[0]);
+            }
+
+        }
+
         while (window.pollEvent(event))
         {
-            window.clear();
             
             // "close requested" event: we close the window
             if (event.type == sf::Event::Closed)
@@ -52,48 +83,27 @@ void Game::drawBackground(RenderWindow& window)
                 {
                     Peach.move(LEFT);
                 }
-
-            }
-            else 
-            {
-                Peach.move(STOP);
-            }
-
-            for (int x = 1; x < 6; x++)
-            {
-                window.draw(Assets[x]);
-            }
-
-            for (int x = 0; x < 16; x++)
-            {
-                Assets[0].setPosition(Vector2f(WINDOW_WIDTH / 2 - 240 + x * 30, WINDOW_HEIGHT - 494));
-                window.draw(Assets[0]);
-                if (x < 12)
+                if (event.key.code == Keyboard::Up)
                 {
-                    Assets[0].setPosition(Vector2f(x * 30, WINDOW_HEIGHT - 294));
-                    window.draw(Assets[0]);
-                    Assets[0].setPosition(Vector2f(WINDOW_WIDTH - 30 - (x * 30), WINDOW_HEIGHT - 294));
-                    window.draw(Assets[0]);
+                    
+                    Peach.jump(true);
+                    printf("jumped");
+                    
                 }
-                if (x < 4) {
-                    Assets[0].setPosition(Vector2f(WINDOW_WIDTH - 30 - (x * 30), WINDOW_HEIGHT - 454));
-                    window.draw(Assets[0]);
-                    Assets[0].setPosition(Vector2f((x * 30), WINDOW_HEIGHT - 454));
-                    window.draw(Assets[0]);
-                }
-                if (x < 14) {
-                    Assets[0].setPosition(Vector2f(WINDOW_WIDTH - 30 - (x * 30), WINDOW_HEIGHT - 694));
-                    window.draw(Assets[0]);
-                    Assets[0].setPosition(Vector2f((x * 30), WINDOW_HEIGHT - 694));
-                    window.draw(Assets[0]);
-                }
-                
             }
-            Peach.draw(window);
-            
-            window.display();
+            if(event.type == Event::KeyReleased)
+            {
+                if (event.key.code == Keyboard::Right || event.key.code == Keyboard::Left)
+                {
+                    Peach.move(STOP);
+                }
+            }
         }
+        Peach.jump(false);
 
+        Peach.draw(window);
+
+        window.display();
         
     }
 
