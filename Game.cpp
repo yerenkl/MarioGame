@@ -1,5 +1,4 @@
 #include "Game.h"
-#include "Mario.h"
 
 void Game::drawBackground(RenderWindow& window)
 {
@@ -28,7 +27,8 @@ void Game::drawBackground(RenderWindow& window)
     Assets[5].setTexture(Textures[3]);
     Assets[5].setPosition(Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT - 846));
     
-    Mario Peach(&window);
+    Object* Peach = new Mario(&window);
+    
 
     while (window.isOpen())
     {
@@ -77,34 +77,90 @@ void Game::drawBackground(RenderWindow& window)
             {
                 if (event.key.code == Keyboard::Right)
                 {
-                    Peach.move(RIGHT);
+                    Peach->move(RIGHT);
                 }
                 if (event.key.code == Keyboard::Left)
                 {
-                    Peach.move(LEFT);
+                    Peach->move(LEFT);
                 }
                 if (event.key.code == Keyboard::Up)
                 {
-                    
-                    Peach.jump(true);
-                    printf("jumped");
-                    
+                    Peach->jump(onFloor(Peach));
+
                 }
             }
             if(event.type == Event::KeyReleased)
             {
                 if (event.key.code == Keyboard::Right || event.key.code == Keyboard::Left)
                 {
-                    Peach.move(STOP);
+                    Peach->move(STOP);
                 }
             }
         }
-        Peach.jump(false);
-
-        Peach.draw(window);
+        Peach->update(onFloor(Peach),hitFloor(Peach));
+        Peach->draw(window);
 
         window.display();
         
+    }
+
+}
+bool Game::onFloor(Object* obj)
+{
+    float posy = obj->getPosition().y;
+    float posx = obj->getPosition().x;
+
+    if (abs(WINDOW_HEIGHT - 180 -posy)<=12)
+    {
+        return true;
+    }
+    else if (abs(WINDOW_HEIGHT - 375 - posy) <= 12 && (posx<365 || posx>659))
+    {
+        return true;
+    }
+    else if (abs(WINDOW_HEIGHT - 535 - posy) <= 12 && (posx < 128 || posx>890))
+    {
+        return true;
+    }
+    else if (abs(WINDOW_HEIGHT - 575 - posy) <= 12 && (posx > 261 && posx<762))
+    {
+        return true;
+    }
+    else if (abs(WINDOW_HEIGHT - 770 - posy) <= 12 && (posx < 420 || posx > 602))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+    
+}
+
+bool Game::hitFloor(Object* obj)
+{
+    float posy = obj->getPosition().y;
+    float posx = obj->getPosition().x;
+    cout << posy << "\n";
+    if (abs(727 - posy) <= 12 && (posx < 365 || posx>659))
+    {
+        return false;
+    }
+    else if (abs(WINDOW_HEIGHT - 535+82 - posy) <= 12 && (posx < 128 || posx>890))
+    {
+        return false;
+    }
+    else if (abs(WINDOW_HEIGHT - 575 + 82 - posy) <= 12 && (posx > 261 && posx < 762))
+    {
+        return false;
+    }
+    else if (abs(WINDOW_HEIGHT - 770 + 82 - posy) <= 12 && (posx < 420 || posx > 602))
+    {
+        return false;
+    }
+    else
+    {
+        return true;
     }
 
 }
