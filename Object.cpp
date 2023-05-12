@@ -10,9 +10,6 @@ Object::Object(RenderWindow* window)
 	for (int x = 1; x < 6; x++) {
 		textures[x+6].loadFromFile("./assets/turtle" + std::to_string(x) + ".png");
 	}
-	
-	pos = Vector2f(540, 1080-300);
-	sprite.setPosition(pos);
 	state = 0;
 	heading = 1;
 }
@@ -32,12 +29,19 @@ void Object::draw(RenderWindow& window)
 	window.draw(sprite);
 }
 
+IntRect Object::boundingBox(void)
+{
+    sf::Rect<float> rec= this->sprite.getGlobalBounds();
+    return static_cast<IntRect>(rec);
+}
+
 Mario::Mario(RenderWindow* window) : Object(window)
 {
     vx = 0;
     isJumping = false;
     sprite.setTexture(textures[0]);
     vy = 0;
+    pos = Vector2f(540, 1080 - 300);
     sprite.setOrigin(sprite.getLocalBounds().width / 2.f, 0.f);
     sprite.setPosition(pos);
 
@@ -178,4 +182,43 @@ void Mario::update(bool ground, bool u_g)
             
         }
     }
+}
+
+Turtle::Turtle(RenderWindow* window) : Object(window)
+{
+    vx = 1;
+    vy = 6;
+    state = 7;
+    sprite.setTexture(textures[state]);
+    pos = Vector2f(50, WINDOW_HEIGHT - 846);
+    sprite.setPosition(pos);
+    sf::Clock clock;
+}
+
+void Turtle::update(bool ground, bool u_g)
+{
+    Vector2f position;
+    float elapsed1 = clock.getElapsedTime().asSeconds();
+    position = getPosition();
+    if (ground) {
+        position.x = position.x + vx;
+        sprite.setTexture(textures[state]);
+        if(elapsed1 > 0.5)
+        {
+            if (state < 9) {
+                state++;
+            }
+            else
+            {
+                state = 7;
+            }
+            clock.restart();
+        }
+
+    }
+    else
+    {
+        position.y = position.y + vy;
+    }
+    setPosition(position);
 }

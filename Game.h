@@ -4,7 +4,7 @@
 
 class Game
 {
-	Sprite Assets[6];
+	Sprite Assets[82];
 	Texture Textures[6];
 public:
 	void drawBackground(RenderWindow& window);
