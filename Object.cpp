@@ -38,158 +38,200 @@ IntRect Object::boundingBox(void)
 Mario::Mario(RenderWindow* window) : Object(window)
 {
     vx = 0;
-    isJumping = false;
+    isJumping = true;
     sprite.setTexture(textures[0]);
     vy = 0;
     pos = Vector2f(540, 1080 - 300);
     sprite.setOrigin(sprite.getLocalBounds().width / 2.f, 0.f);
     sprite.setPosition(pos);
-
+    Clock clock;
 }
 
 void Mario::move(int direction)
 {
-    sprite.setOrigin(sprite.getLocalBounds().width / 2.f, 0.f);
-    Vector2f position;
-    if (direction == LEFT)
+    
+    if (state != 6)
     {
-        position = getPosition();
-        vx +=1;
-        if (vx >= VELOCITY_X)
+        sprite.setOrigin(sprite.getLocalBounds().width / 2.f, 0.f);
+        Vector2f position;
+        float elapsed1 = clock.getElapsedTime().asSeconds();
+        if (direction == LEFT)
         {
-            vx = VELOCITY_X;
+            position = getPosition();
+            vx += 1;
+            if (vx >= VELOCITY_X)
+            {
+                vx = VELOCITY_X;
+            }
+            position.x = position.x - vx;
+            setPosition(position);
+            if (elapsed1 > 0.1 && isJumping == false)
+            {
+                if (state <= 3 && state > 0)
+                {
+                    state++;
+                }
+                else
+                {
+                    state = 1;
+                }
+                clock.restart();
+            }
+            if (heading == LEFT) {
+                heading = RIGHT;
+            }
         }
-        position.x = position.x - vx;
-        setPosition(position);
-        if (isJumping == false)
+
+        if (direction == RIGHT)
         {
-            if (state <= 3 && state > 0)
+            position = getPosition();
+            vx -= 2;
+            if (vx <= -VELOCITY_X)
             {
-                state++;
+                vx = -VELOCITY_X;
             }
-            else
+            position.x = position.x - vx;
+            setPosition(position);
+            if (elapsed1 > 0.1 && isJumping == false)
             {
-                state = 1;
+                if (state <= 3 && state > 0)
+                {
+                    state++;
+                }
+                else
+                {
+                    state = 1;
+                }
+                clock.restart();
+            }
+            if (heading == RIGHT) {
+                heading = LEFT;
             }
         }
+        if (direction == STOP)
+        {
+            if (!isJumping)
+            {
+                state = 0;
+            }
+            vx = 0;
+        }
+
+
+        sprite.setTexture(textures[state]);
+
 
         if (heading == LEFT) {
-            heading = RIGHT;
+            sprite.setScale(-1.f, 1.f);
+        }
+        else {
+            sprite.setScale(1.f, 1.f);
         }
     }
-    if (direction == RIGHT)
-    {
-        position = getPosition();
-        vx -= 2;
-        if (vx <= -VELOCITY_X)
-        {
-            vx = -VELOCITY_X;
-        }
-        position.x = position.x - vx;
-        setPosition(position);
-        if (isJumping == false)
-        {
-            if (state <= 3 && state > 0)
-            {
-                state++;
-            }
-            else
-            {
-                state = 1;
-            }
-        }
-        if (heading == RIGHT) {
-            heading = LEFT;
-        }
-    }
-    if (direction == STOP)
-    {
-        state = 0;
-        vx = 0;
-    }
-
-    if (!isJumping)
-    {
-        sprite.setTexture(textures[state]);
-    }
-
-    if (heading == LEFT) {
-        sprite.setScale(-1.f, 1.f);
-    }
-    else {
-        sprite.setScale(1.f, 1.f);
-    }
+    
 }
 
-void Mario::jump(bool ground)
+
+
+void Mario::jump(bool ground) //on ground and not jumping
 {
     Vector2f position;
     
-    if(ground && !isJumping)
+    if(ground && !isJumping && state!=6)
     {       
         isJumping = true;
-        vy = 10;
-        sprite.setTexture(textures[5]);
+        vy = VELOCITY_Y;
         state = 5;
+        sprite.setTexture(textures[state]);
+        jumped.restart();
     }
     
 
 }
 
 void Mario::fall(void) {
-    vy = -10;
-    sprite.setTexture(textures[6]);
+    vy = -VELOCITY_Y;
+    state = 6;
+    sprite.setTexture(textures[state]);
     Vector2f position = getPosition();
     position.y -= vy;
     setPosition(position);
+    clock.restart();
 }
 
-void Mario::update(bool ground, bool u_g)
+
+
+void Mario::update(int ground)
 {
     Vector2f position;
 
-    if (!u_g)
+    if (state != 6) 
     {
-        printf("jesus");
-        vy = -1.7;
-        isJumping = false;
-    }
+        if (ground == 2)
+        {
+            vy = -2;
 
-    if (!isJumping && ground)
-    {
-        sprite.setTexture(textures[state]);
-        vy = 0;
+            isJumping = true;
+            state = 5;
+        }
+        if (ground == 4)
+        {
+            vy = -5;
+            vx = 0;
+            isJumping = true;
+            state = 0;
+        }
+        if (!isJumping && !ground)
+        {
+            isJumping = true;
+            state = 5;
+        }
+        if (isJumping || ground == 0)
+        {
+            position = getPosition();
+            vy -= 0.2;
+            if (vx <= -1)
+            {
+                vx = -1;
+            }
+            if (vx >= 1)
+            {
+                vx = 1;
+            }
+            if (vy <= -VELOCITY_Y)
+            {
+                vy = -VELOCITY_Y;
+            }
+
+            if (isJumping && ground == 1 && jumped.getElapsedTime().asSeconds() > 0.0001) {
+                cout << isJumping;
+                sprite.setTexture(textures[0]);
+                isJumping = false;
+                vy = 0;
+            }
+            position.y -= vy;
+            position.x -= vx;
+            setPosition(position);
+        }
     }
-    
-    else if (isJumping || !ground || !u_g)
+    else 
     {
         position = getPosition();
-        vy -= 0.2;
-        if (vx <= -2.5)
-        {
-            vx = -2.5;
-        }
-        if (vx >= 2.5)
-        {
-            vx = 2.5;
-        }
-        if (vy >= 12)
-        {
-            vy= 12;
-        }
-        if (vy <= -12)
-        {
-            vy = -12;
-        }
         position.y -= vy;
-        position.x -= vx;
         setPosition(position);
-        if (ground) {
+        float elapsed1 = clock.getElapsedTime().asSeconds();
+        if (elapsed1 > 2) { //revive time
+            vx = 0;
+            isJumping = true;
             state = 0;
-            isJumping = false;
-            
+            sprite.setTexture(textures[state]);
+            vy = 0;
+            pos = Vector2f(540, 1080 - 300);
+            sprite.setOrigin(sprite.getLocalBounds().width / 2.f, 0.f);
+            sprite.setPosition(pos);
         }
     }
+    
 }
 
 Turtle::Turtle(RenderWindow* window) : Object(window)
@@ -203,7 +245,7 @@ Turtle::Turtle(RenderWindow* window) : Object(window)
     sf::Clock clock;
 }
 
-void Turtle::update(bool ground, bool u_g)
+void Turtle::update(int ground)
 {
     Vector2f position;
     float elapsed1 = clock.getElapsedTime().asSeconds();

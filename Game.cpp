@@ -63,34 +63,22 @@ void Game::drawBackground(RenderWindow& window)
         Event event;
         window.clear();
 
+        window.draw(Assets[1]);
         for (int x = 6; x < 81; x++)
         {
             window.draw(Assets[x]);
         }
 
 
-        while (window.pollEvent(event))
+        if (window.pollEvent(event))
         {
             
             // "close requested" event: we close the window
             if (event.type == sf::Event::Closed)
                 window.close();
-            if (event.type == Event::KeyPressed)
-            {
-                if (event.key.code == Keyboard::Right)
-                {
-                    Peach->move(RIGHT);
-                }
-                if (event.key.code == Keyboard::Left)
-                {
-                    Peach->move(LEFT);
-                }
-                if (event.key.code == Keyboard::Up)
-                {
-                    Peach->jump(onFloor(Peach));
-
-                }
-            }
+            
+            
+             
             if(event.type == Event::KeyReleased)
             {
                 if (event.key.code == Keyboard::Right || event.key.code == Keyboard::Left)
@@ -100,20 +88,34 @@ void Game::drawBackground(RenderWindow& window)
             }
             
         }
+        if (onFloor(Peach) != 4)
+        {
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+            {
+                Peach->move(RIGHT);
+            }
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+            {
+                Peach->move(LEFT);
+            }
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+            {
+                Peach->jump(onFloor(Peach));
+
+            }
+        }
         if (checkCollusion(Koppa, Peach,flag)){ //check collusion with turtle
             Peach->fall();
         }
 
-        else 
-        {
-            Peach->update(onFloor(Peach), hitFloor(Peach));
-        }
+        Peach->update(onFloor(Peach));
+        
 
-        Koppa->update(onFloor(Koppa),false);
+        Koppa->update(onFloor(Koppa));
         Peach->draw(window);
         Koppa->draw(window);
 
-        for (int x = 1; x < 6; x++)
+        for (int x = 2; x < 6; x++)
         {
             window.draw(Assets[x]);
         }
@@ -123,20 +125,39 @@ void Game::drawBackground(RenderWindow& window)
     }
 
 }
-bool Game::onFloor(Object* obj)
+int Game::onFloor(Object* obj)
 {
     for (int x = 0; x < 81; x++) {
-        IntRect a =static_cast<IntRect>(Assets[x].getGlobalBounds());
+
+        IntRect a = static_cast<IntRect>(Assets[x].getGlobalBounds());
         IntRect b = obj->boundingBox();
-        sf::IntRect b_up(b.left, b.top, b.width, b.height - 10);
-        sf::IntRect b_down(b.left, b.top + b.height, b.width, 10);
-        if (a.intersects(b_down))
+
+        sf::IntRect a_up(a.left+10, a.top - 12, a.width-20, 30);
+        sf::IntRect a_down(a.left+10, a.top + a.height + 12, a.width-10, 10);
+
+        sf::IntRect a_left(a.left + a.width - 10, a.top - 5, 5, a.height - 10);
+
+
+        
+        if (b.intersects(a_left))
         {
-            /*cout << "top:" << b.top << "bottom:" << a.top - a.height  << "\n";*/
-            return true;
+            /*cout << "left";*/
+            return 4;
         }
+        if (b.intersects(a_down))
+        {
+            /*cout << "top:" << b.top << "bottom:" << b.left  << "\n";*/
+           /* cout << "up";*/
+            return 2;
+        }
+        if (b.intersects(a_up))
+        {
+            /*cout << "GROUND";*/
+            return 1;
+        }
+        
     }
-        return false;
+    return 0;
 }
 
 bool Game::hitFloor(Object* obj)
@@ -149,10 +170,10 @@ bool Game::hitFloor(Object* obj)
         sf::IntRect b_down(b.left, b.top + b.height, b.width, 10);
         if (a.intersects(b_up))
         {
-            return true;
+            return false;
         }
     }
-    return false;
+    return true;
 
 }
 

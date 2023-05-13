@@ -8,7 +8,7 @@ class Game
 	Texture Textures[6];
 public:
 	void drawBackground(RenderWindow& window);
-	bool onFloor(Object* obj);
+	int onFloor(Object* obj);
 	bool hitFloor(Object* obj);
 	bool checkCollusion(Object* t, Object* m, int& side);
 };

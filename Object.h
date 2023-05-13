@@ -10,6 +10,7 @@ protected:
 	int heading;
 	Sprite sprite;
 	Vector2f pos;
+	sf::Clock clock;
 public:
 	Object(RenderWindow* window); //Constructor
 	void setPosition(Vector2f pos); //Sets position of the object
@@ -18,7 +19,7 @@ public:
 	void draw(RenderWindow& window);//Draws current the object texture to screen
 	virtual void move(int direction) {}; //Abstract method that will be overridden
 	virtual void jump(bool down) {}; //Abstract method that will be overridden
-	virtual void update(bool ground, bool u_g){};
+	virtual void update(int ground){};
 	virtual void fall(void) {};
 };
 
@@ -27,14 +28,15 @@ class Mario :public Object
 	float vx;
 	float vy;
 	bool isJumping;
-	bool isWalking;
-	
+	bool running;
+	Clock jumped;
 
 public:
 	Mario(sf::RenderWindow* window);
 	void move(int direction);
 	void jump(bool down);
-	void update(bool ground, bool u_g);
+	void slide(void);
+	void update(int ground);
 	void fall(void);
 };
 
@@ -42,11 +44,10 @@ class Turtle :public Object
 {
 	float vx;
 	float vy;
-	sf::Clock clock;
 public:
 	Turtle(sf::RenderWindow* window);
 	void move(int direction) {};
 	void jump(bool down) {};
-	void update(bool ground, bool u_g);
+	void update(int ground);
 	void fall(void) {};
 };
