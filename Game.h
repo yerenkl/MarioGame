@@ -10,5 +10,5 @@ public:
 	void drawBackground(RenderWindow& window);
 	bool onFloor(Object* obj);
 	bool hitFloor(Object* obj);
-	/*bool checkCollusion(Turtle* t, Mario* m, int& side);*/
+	bool checkCollusion(Object* t, Object* m, int& side);
 };

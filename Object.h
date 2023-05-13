@@ -19,6 +19,7 @@ public:
 	virtual void move(int direction) {}; //Abstract method that will be overridden
 	virtual void jump(bool down) {}; //Abstract method that will be overridden
 	virtual void update(bool ground, bool u_g){};
+	virtual void fall(void) {};
 };
 
 class Mario :public Object
@@ -27,12 +28,14 @@ class Mario :public Object
 	float vy;
 	bool isJumping;
 	bool isWalking;
+	
 
 public:
 	Mario(sf::RenderWindow* window);
 	void move(int direction);
 	void jump(bool down);
 	void update(bool ground, bool u_g);
+	void fall(void);
 };
 
 class Turtle :public Object
@@ -45,4 +48,5 @@ public:
 	void move(int direction) {};
 	void jump(bool down) {};
 	void update(bool ground, bool u_g);
+	void fall(void) {};
 };

@@ -100,9 +100,15 @@ void Game::drawBackground(RenderWindow& window)
             }
             
         }
-        IntRect a = Peach->boundingBox();
-        cout << "left:" << a.left << "top:" <<  a.top << "width:" << a.width << "height:" << a.height <<"\n";
-        Peach->update(onFloor(Peach),hitFloor(Peach));
+        if (checkCollusion(Koppa, Peach,flag)){ //check collusion with turtle
+            Peach->fall();
+        }
+
+        else 
+        {
+            Peach->update(onFloor(Peach), hitFloor(Peach));
+        }
+
         Koppa->update(onFloor(Koppa),false);
         Peach->draw(window);
         Koppa->draw(window);
@@ -111,6 +117,7 @@ void Game::drawBackground(RenderWindow& window)
         {
             window.draw(Assets[x]);
         }
+
         window.display();
         
     }
@@ -118,64 +125,45 @@ void Game::drawBackground(RenderWindow& window)
 }
 bool Game::onFloor(Object* obj)
 {
-    float posy = obj->getPosition().y;
-    float posx = obj->getPosition().x;
-    
-    if (abs(WINDOW_HEIGHT - 180 -posy)<=12)
-    {
-        return true;
+    for (int x = 0; x < 81; x++) {
+        IntRect a =static_cast<IntRect>(Assets[x].getGlobalBounds());
+        IntRect b = obj->boundingBox();
+        sf::IntRect b_up(b.left, b.top, b.width, b.height - 10);
+        sf::IntRect b_down(b.left, b.top + b.height, b.width, 10);
+        if (a.intersects(b_down))
+        {
+            /*cout << "top:" << b.top << "bottom:" << a.top - a.height  << "\n";*/
+            return true;
+        }
     }
-    else if (abs(WINDOW_HEIGHT - 375 - posy) <= 12 && (posx<365 || posx>659))
-    {
-        return true;
-    }
-    else if (abs(WINDOW_HEIGHT - 535 - posy) <= 12 && (posx < 128 || posx>890))
-    {
-        return true;
-    }
-    else if (abs(WINDOW_HEIGHT - 575 - posy) <= 12 && (posx > 261 && posx<762))
-    {
-        return true;
-    }
-    else if (abs(WINDOW_HEIGHT - 770 - posy) <= 12 && (posx < 420 || posx > 602))
-    {
-        return true;
-    }
-    else if (abs(WINDOW_HEIGHT - 846 - posy)==0 && (posx < 170))
-    {
-        return true;
-    }
-    else
-    {
         return false;
-    }
-    
 }
 
 bool Game::hitFloor(Object* obj)
 {
-    float posy = obj->getPosition().y;
-    float posx = obj->getPosition().x;
-    
-    if (abs(727 - posy) <= 12 && (posx < 365 || posx>659))
-    {
-        return false;
+
+    for (int x = 0; x < 81; x++) {
+        IntRect a = static_cast<IntRect>(Assets[x].getGlobalBounds());
+        IntRect b = obj->boundingBox();
+        sf::IntRect b_up(b.left, b.top, b.width, b.height - 10);
+        sf::IntRect b_down(b.left, b.top + b.height, b.width, 10);
+        if (a.intersects(b_up))
+        {
+            return true;
+        }
     }
-    else if (abs(WINDOW_HEIGHT - 535+82 - posy) <= 12 && (posx < 128 || posx>890))
-    {
-        return false;
-    }
-    else if (abs(WINDOW_HEIGHT - 575 + 82 - posy) <= 12 && (posx > 261 && posx < 762))
-    {
-        return false;
-    }
-    else if (abs(WINDOW_HEIGHT - 770 + 82 - posy) <= 12 && (posx < 420 || posx > 602))
-    {
-        return false;
-    }
-    else
-    {
-        return true;
-    }
+    return false;
+
+}
+
+bool Game::checkCollusion(Object* t, Object* m, int& side)
+{
+        IntRect a = t->boundingBox();
+        IntRect b = m->boundingBox();
+        if (a.intersects(b))
+        {
+            return true;
+        }
+    return false;
 
 }

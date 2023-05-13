@@ -128,12 +128,20 @@ void Mario::jump(bool ground)
     if(ground && !isJumping)
     {       
         isJumping = true;
-        vy = 12;
+        vy = 10;
         sprite.setTexture(textures[5]);
         state = 5;
     }
     
 
+}
+
+void Mario::fall(void) {
+    vy = -10;
+    sprite.setTexture(textures[6]);
+    Vector2f position = getPosition();
+    position.y -= vy;
+    setPosition(position);
 }
 
 void Mario::update(bool ground, bool u_g)
@@ -143,7 +151,7 @@ void Mario::update(bool ground, bool u_g)
     if (!u_g)
     {
         printf("jesus");
-        vy = -5;
+        vy = -1.7;
         isJumping = false;
     }
 
@@ -156,7 +164,7 @@ void Mario::update(bool ground, bool u_g)
     else if (isJumping || !ground || !u_g)
     {
         position = getPosition();
-        vy -= 0.3;
+        vy -= 0.2;
         if (vx <= -2.5)
         {
             vx = -2.5;
