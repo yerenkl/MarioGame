@@ -27,6 +27,7 @@ class Mario :public Object
 {
 	float vx;
 	float vy;
+	int lives;
 	bool isJumping;
 	bool running;
 	Clock jumped;

@@ -6,25 +6,25 @@ void Game::drawBackground(RenderWindow& window)
     Textures[0].loadFromFile("./assets/brick.png");
     Assets[0].setTexture(Textures[0]);
 
-    Textures[1].loadFromFile("./assets/floor.png");
+
+    Textures[1].loadFromFile("./assets/pipe.png");
     Assets[1].setTexture(Textures[1]);
-    Assets[1].setPosition(Vector2f(0, WINDOW_HEIGHT - 100));
+    Assets[1].setPosition(Vector2f(WINDOW_WIDTH - 130, WINDOW_HEIGHT - 174));
 
-    Textures[2].loadFromFile("./assets/pipe.png");
-    Assets[2].setTexture(Textures[2]);
-    Assets[2].setPosition(Vector2f(WINDOW_WIDTH - 130, WINDOW_HEIGHT - 174));
+    Assets[2].setTexture(Textures[1]);
+    Assets[2].setScale(-1.f, 1.f);
+    Assets[2].setPosition(Vector2f(130, WINDOW_HEIGHT - 174));
 
-    Assets[3].setTexture(Textures[2]);
-    Assets[3].setScale(-1.f, 1.f);
-    Assets[3].setPosition(Vector2f(130, WINDOW_HEIGHT - 174));
+    Textures[3].loadFromFile("./assets/floor.png");
+    Assets[3].setTexture(Textures[3]);
+    Assets[3].setPosition(Vector2f(0, WINDOW_HEIGHT - 100));
 
-    Textures[3].loadFromFile("./assets/pipeS.png");
+    Textures[4].loadFromFile("./assets/pipeS.png");
     Assets[4].setPosition(Vector2f(0, WINDOW_HEIGHT - 846));
-    Assets[4].setTexture(Textures[3]);
-
+    Assets[4].setTexture(Textures[4]);
 
     Assets[5].setScale(-1.f, 1.f);
-    Assets[5].setTexture(Textures[3]);
+    Assets[5].setTexture(Textures[4]);
     Assets[5].setPosition(Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT - 846));
 
     for (int x = 6; x < 81; x++)
@@ -64,7 +64,7 @@ void Game::drawBackground(RenderWindow& window)
         window.clear();
 
         window.draw(Assets[1]);
-        for (int x = 6; x < 81; x++)
+        for (int x = 5; x < 81; x++)
         {
             window.draw(Assets[x]);
         }
@@ -88,22 +88,21 @@ void Game::drawBackground(RenderWindow& window)
             }
             
         }
-        if (onFloor(Peach) != 4)
+        
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
         {
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-            {
-                Peach->move(RIGHT);
-            }
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-            {
-                Peach->move(LEFT);
-            }
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-            {
-                Peach->jump(onFloor(Peach));
-
-            }
+            Peach->move(RIGHT);
         }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+        {
+            Peach->move(LEFT);
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+        {
+            Peach->jump(onFloor(Peach));
+
+        }
+        
         if (checkCollusion(Koppa, Peach,flag)){ //check collusion with turtle
             Peach->fall();
         }
@@ -115,7 +114,7 @@ void Game::drawBackground(RenderWindow& window)
         Peach->draw(window);
         Koppa->draw(window);
 
-        for (int x = 2; x < 6; x++)
+        for (int x = 1; x < 5; x++)
         {
             window.draw(Assets[x]);
         }
@@ -127,7 +126,7 @@ void Game::drawBackground(RenderWindow& window)
 }
 int Game::onFloor(Object* obj)
 {
-    for (int x = 0; x < 81; x++) {
+    for (int x = 1; x < 81; x++) {
 
         IntRect a = static_cast<IntRect>(Assets[x].getGlobalBounds());
         IntRect b = obj->boundingBox();
@@ -136,8 +135,6 @@ int Game::onFloor(Object* obj)
         sf::IntRect a_down(a.left+10, a.top + a.height + 12, a.width-10, 10);
 
         sf::IntRect a_left(a.left + a.width - 10, a.top - 5, 5, a.height - 10);
-
-
         
         if (b.intersects(a_left))
         {
@@ -148,12 +145,14 @@ int Game::onFloor(Object* obj)
         {
             /*cout << "top:" << b.top << "bottom:" << b.left  << "\n";*/
            /* cout << "up";*/
+            
             return 2;
         }
         if (b.intersects(a_up))
         {
             /*cout << "GROUND";*/
             return 1;
+            
         }
         
     }

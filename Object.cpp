@@ -44,6 +44,7 @@ Mario::Mario(RenderWindow* window) : Object(window)
     pos = Vector2f(540, 1080 - 300);
     sprite.setOrigin(sprite.getLocalBounds().width / 2.f, 0.f);
     sprite.setPosition(pos);
+    lives = 3;
     Clock clock;
 }
 
@@ -157,6 +158,10 @@ void Mario::fall(void) {
     position.y -= vy;
     setPosition(position);
     clock.restart();
+    if (lives == 0) 
+    {
+        cout << "GAMEOVER";
+    }
 }
 
 
@@ -214,13 +219,15 @@ void Mario::update(int ground)
             setPosition(position);
         }
     }
-    else 
+    else
     {
         position = getPosition();
         position.y -= vy;
         setPosition(position);
         float elapsed1 = clock.getElapsedTime().asSeconds();
-        if (elapsed1 > 2) { //revive time
+        if(elapsed1 > 2 && lives != 0)
+        { //revive time
+            lives--;
             vx = 0;
             isJumping = true;
             state = 0;
@@ -236,13 +243,14 @@ void Mario::update(int ground)
 
 Turtle::Turtle(RenderWindow* window) : Object(window)
 {
-    vx = 1;
+    vx = 5;
     vy = 6;
     state = 7;
     sprite.setTexture(textures[state]);
-    pos = Vector2f(50, WINDOW_HEIGHT - 846);
-    sprite.setPosition(pos);
+    pos = Vector2f(80, WINDOW_HEIGHT - 846);
+    setPosition(pos);
     sf::Clock clock;
+    heading = RIGHT;
 }
 
 void Turtle::update(int ground)
@@ -250,8 +258,30 @@ void Turtle::update(int ground)
     Vector2f position;
     float elapsed1 = clock.getElapsedTime().asSeconds();
     position = getPosition();
+    if (position.x >= 950 || position.x <= 50) {
+
+        vx = -vx;
+        
+        if(position.y == 850)
+        {
+            position.x = 80;
+            position.y = WINDOW_HEIGHT - 846;
+        }
+        if (heading == LEFT) {
+            sprite.setOrigin(sprite.getLocalBounds().width / 2.f, 0.f);
+            sprite.setScale(1.f, 1.f);
+            heading = RIGHT;
+        }
+        else {
+            sprite.setOrigin(sprite.getLocalBounds().width / 2.f, 0.f);
+            sprite.setScale(-1.f, 1.f);
+            heading = LEFT;
+        }
+    }
+
+
     if (ground) {
-        position.x = position.x + vx;
+        position.x += vx;
         sprite.setTexture(textures[state]);
         if(elapsed1 > 0.5)
         {
@@ -266,9 +296,12 @@ void Turtle::update(int ground)
         }
 
     }
+
     else
     {
         position.y = position.y + vy;
     }
+
+
     setPosition(position);
 }
