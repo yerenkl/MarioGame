@@ -55,5 +55,6 @@ void Object::resetVelocity()
 
 void Object::resetVelocityFall()
 {
-	vy = 0;
+	if(!dead)
+		vy = 0;
 }

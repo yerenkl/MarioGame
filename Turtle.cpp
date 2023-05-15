@@ -6,7 +6,7 @@ Turtle::Turtle(RenderWindow* window) : Object(window)
     frame = 7;
     sprite.setTexture(textures[frame]);
     pos = Vector2f(500,500);
-    setPosition(pos);
+    sprite.setPosition(pos);
     animationTimer.restart();
     heading = -1;
     vx = heading*TURTLE_SPEED;

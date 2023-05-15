@@ -42,10 +42,8 @@ void Mario::jump(const float dir_x, const float dir_y)
     //Acceleration
     vx += dir_x * 3;
 
-    if (dir_y)
-    {
-        vy = -VELOCITY_Y;
-    }
+    vy = -VELOCITY_Y;
+    
     if (abs(vx) > VELOCITY_X/3)
     {
         vx = dir_x * VELOCITY_X/3;
@@ -54,7 +52,7 @@ void Mario::jump(const float dir_x, const float dir_y)
 
 void Mario::fall(void)
 {
-    if (state!=7)
+    if (state!= FALL)
     {
         vy = VELOCITY_Y;
         state = FALL;
@@ -62,6 +60,7 @@ void Mario::fall(void)
         sprite.setTexture(textures[frame]);
         lives--;
         animationTimer.restart();
+        dead = true;
     }
 }
 
@@ -110,7 +109,7 @@ void Mario::updateMove()
 void Mario::updatePhysics()
 {
     vy += g;
-    if (vy > VELOCITY_Y)
+    if (vy > VELOCITY_Y && dead)
     {
         vy = VELOCITY_Y;
     }
@@ -185,6 +184,7 @@ void Mario::animationUpdate()
     {
         if (animationTimer.getElapsedTime().asSeconds() > 3.f)
         {
+            dead = false;
             state = IDLE;
             frame = 0;
             sprite.setTexture(textures[frame]);

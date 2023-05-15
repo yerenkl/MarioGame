@@ -6,8 +6,15 @@
 #include "ScoreBoard.h"
 Game::Game()
 {   
+    score = 0;
     font.loadFromFile("./assets/font.ttf");
     hitFlag = false;
+    scoreText.setFont(font);
+    scoreText.setPosition(50, 50);
+    gameOver.setFont(font);
+    gameOver.setScale(2.f, 2.f);
+    gameOver.setOrigin(gameOver.getGlobalBounds().left / 2, gameOver.getGlobalBounds().top / 2);
+    gameOver.setPosition(300, 400);
     deadTime.restart();
     Textures[0].loadFromFile("./assets/brick.png");
     Assets[0].setTexture(Textures[0]);
@@ -59,30 +66,56 @@ Game::Game()
     }
 
     Assets[3].setPosition(Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT - 846));
+
+    Textures[6].loadFromFile("./assets/mariohead.png");
+    Assets[82].setTexture(Textures[6]);
+    Assets[82].setPosition(Vector2f(50, 100));
+
+    Assets[83].setTexture(Textures[6]);
+    Assets[83].setPosition(Vector2f(80, 100));
+
+    Assets[84].setTexture(Textures[6]);
+    Assets[84].setPosition(Vector2f(110, 100));
 }
 
 void Game::drawBackground(RenderWindow& window)
-{
-        for (int x = 1; x < 81; x++)
-        {
-            window.draw(Assets[x]);
-        }
-
+{       
+    
+    scoreText.setString(board->getScore());
+    window.draw(scoreText);
+    for (int x = 1; x < 85; x++)
+    {
+        window.draw(Assets[x]);
+    }
 }
 
 void Game::GameUpdate(RenderWindow& window)
 {
     Object* Peach = new Mario(&window);
     Object* Koppa = new Turtle(&window);
+    board = new ScoreBoard();
     while (window.isOpen())
     {
         // check all the window's events that were triggered since the last iteration of the loop
         Event event;
         window.clear();
-        Koppa->update();
-        drawBackground(window);
-        Peach->update();
-        
+
+        if (board->getLives() == 0)
+        {
+            gameOver.setString("GAMEOVER");
+        }
+        else if (board->getScore() == "00500")
+        {
+            gameOver.setString("YOU WIN!");
+        }
+
+        if (board->getLives() != 0 || board->getScore() == "00500")
+        {
+             Koppa->update();
+             drawBackground(window);
+             Peach->update();
+        }
+
         if (window.pollEvent(event))
         {
             // "close requested" event: we close the window
@@ -97,30 +130,16 @@ void Game::GameUpdate(RenderWindow& window)
             }
         }
         
-        
-        checkCollusion(Peach, Koppa, side);
-        cout << side;
-
-        if (side==2 && !hitFlag) {
-            
-            hitFlag = true;
-            deadTime.restart();
-        }
-        
-        if (hitFlag) //hits mario
+        if (board->getLives() == 0 || board->getScore() == "00500")
         {
-            if (deadTime.getElapsedTime().asSeconds() > 3.0f)
-            {
-                hitFlag = false;
-                onFloor(Peach);
-            }
+            window.draw(gameOver);
         }
         else
         {
+            checkCollusion(Peach, Koppa, side);
             onFloor(Peach);
+            turtleCollusion(Koppa);
         }
-
-        turtleCollusion(Koppa);
         window.display();
 
     }
@@ -171,14 +190,12 @@ void Game::turtleCollusion(Object* obj)
 
         if (b.intersects(pipe3))
         {
-            cout << "ouch";
             obj->setVelocityX();
             obj->resetVelocity();
             obj->setPosition(Vector2f(940, WINDOW_HEIGHT - 846));
         }
         else if (b.intersects(pipe4))
         {
-            cout << "ouch";
             obj->setVelocityX();
             obj->setPosition(Vector2f(80, WINDOW_HEIGHT - 846));
         }
@@ -221,18 +238,32 @@ bool Game::checkCollusion(Object* m, Object* t, int& side)
 
     sf::FloatRect mario_down(b.left, b.top + b.height-20, b.width, 20);
     sf::FloatRect turtle_up(a.left, a.top, a.width, 20);
-    if (mario_down.intersects(turtle_up))
+
+    if (deadTime.getElapsedTime().asSeconds() > 0.3f && hitFlag)
+    {
+        hitFlag = false;
+    }
+    if (mario_down.intersects(turtle_up) && !hitFlag)
     {
         t->fall();
         side = 1; //turtle dead
+        hitFlag = true;
+        score += 100;
+        board->setScore(score);
+        deadTime.restart();
         return true;
     }
-    else if (a.intersects(b))
+    else if (a.intersects(b) && !hitFlag)
     {
         m->fall();
         side = 2; //mario dead
+        Assets[81 + board->getLives()].setPosition(-500, -500);
+        board->setLives(board->getLives()-1);
+        hitFlag = true;
+        deadTime.restart();
         return true;
     }
+    
     side = 0;
     return false;
 }
