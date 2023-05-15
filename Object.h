@@ -3,52 +3,33 @@
 
 class Object
 {
+public:
+	bool dead;
 protected:
-	Texture textures[14];
 	RenderWindow* window;
-	int state;
-	int heading;
+	Texture textures[14];
 	Sprite sprite;
 	Vector2f pos;
+	float vx;
+	float vy;
+	int state;
+	int frame;
+	int heading;
+	bool isJumping;
 	sf::Clock clock;
+	Clock animationTimer;
 public:
 	Object(RenderWindow* window); //Constructor
-	void setPosition(Vector2f pos); //Sets position of the object
+	void setPosition(Vector2f pos);
+	void setVelocityX(void);//Sets position of the object
 	Vector2f getPosition(); //Gets position of the object-
-	sf::IntRect boundingBox(void);
+	sf::FloatRect boundingBox(void);
+	void resetVelocity();
+	void resetVelocityFall();
 	void draw(RenderWindow& window);//Draws current the object texture to screen
-	virtual void move(int direction) {}; //Abstract method that will be overridden
-	virtual void jump(bool down) {}; //Abstract method that will be overridden
-	virtual void update(int ground){};
+	void move(int direction) {}; //Abstract method that will be overridden
+	virtual void jump(const float dir_x, const float dir_y) {}; //Abstract method that will be overridden
 	virtual void fall(void) {};
-};
-
-class Mario :public Object
-{
-	float vx;
-	float vy;
-	int lives;
-	bool isJumping;
-	bool running;
-	Clock jumped;
-
-public:
-	Mario(sf::RenderWindow* window);
-	void move(int direction);
-	void jump(bool down);
-	void slide(void);
-	void update(int ground);
-	void fall(void);
-};
-
-class Turtle :public Object
-{
-	float vx;
-	float vy;
-public:
-	Turtle(sf::RenderWindow* window);
-	void move(int direction) {};
-	void jump(bool down) {};
-	void update(int ground);
-	void fall(void) {};
+	virtual void update(void) {};
+	virtual void animationReset() {};
 };

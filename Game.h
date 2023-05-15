@@ -6,9 +6,16 @@ class Game
 {
 	Sprite Assets[82];
 	Texture Textures[6];
+	bool hitFlag;
+	Clock deadTime;
+	int side;
+	Font font;
 public:
+	Game();
 	void drawBackground(RenderWindow& window);
-	int onFloor(Object* obj);
-	bool hitFloor(Object* obj);
-	bool checkCollusion(Object* t, Object* m, int& side);
+	void GameUpdate(RenderWindow& window);
+	void onFloor(Object* obj);
+	void turtleCollusion(Object* obj);
+	//bool hitFloor(Object* obj);
+	bool checkCollusion(Object* m, Object* t, int& side);
 };
