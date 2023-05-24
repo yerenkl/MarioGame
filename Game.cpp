@@ -4,17 +4,32 @@
 #include "Turtle.h"
 #include "Object.h"
 #include "ScoreBoard.h"
+
 Game::Game()
 {   
+    turtleCount = 0;
+    gamewin = false;
+    gameover = false;
+    elapsedTime = 5;
+    gamestart = false;
     score = 0;
-    font.loadFromFile("./assets/font.ttf");
+    fontScore.loadFromFile("./assets/font.ttf");
+    fontHead.loadFromFile("./assets/04B_30__.TTF");
     hitFlag = false;
-    scoreText.setFont(font);
-    scoreText.setPosition(50, 50);
-    gameOver.setFont(font);
-    gameOver.setScale(2.f, 2.f);
-    gameOver.setOrigin(gameOver.getGlobalBounds().left / 2, gameOver.getGlobalBounds().top / 2);
-    gameOver.setPosition(300, 400);
+    text[0].setFont(fontScore);
+    text[0].setPosition(50, 50);
+    text[1].setFont(fontScore);
+    text[1].setScale(2.f, 2.f);
+    text[2].setFont(fontHead);
+    text[2].setString("Press Enter!");
+    text[2].setScale(1.5f, 1.5f);
+    text[2].setFillColor(sf::Color::White);
+    text[2].setPosition(512- text[2].getGlobalBounds().width / 2, 350);
+    text[3].setFont(fontHead);
+    text[3].setString("SUPER MARIO");
+    text[3].setScale(2.5f, 2.5f);
+    text[3].setPosition(512-text[3].getGlobalBounds().width/2, 250);
+    text[3].setFillColor(sf::Color::Red);
     deadTime.restart();
     Textures[0].loadFromFile("./assets/brick.png");
     Assets[0].setTexture(Textures[0]);
@@ -40,6 +55,17 @@ Game::Game()
     Textures[5].loadFromFile("./assets/floor.png");
     Assets[5].setTexture(Textures[5]);
     Assets[5].setPosition(Vector2f(0, WINDOW_HEIGHT - 100));
+
+    Textures[7].loadFromFile("./assets/start_screen.png");
+    Assets[85].setScale(Vector2f(1.5f, 1.5f));
+    Assets[85].setTexture(Textures[7]);
+    Assets[85].setOrigin(Assets[85].getLocalBounds().width / 2.f, 0.f);
+    Assets[85].setPosition(Vector2f(512,100));
+
+    Textures[8].loadFromFile("./assets/background.png");
+    Assets[86].setTexture(Textures[8]);
+    Assets[86].setPosition(Vector2f(0, 300));
+
     for (int x = 6; x < 81; x++)
     {
         Assets[x].setTexture(Textures[0]);
@@ -72,17 +98,17 @@ Game::Game()
     Assets[82].setPosition(Vector2f(50, 100));
 
     Assets[83].setTexture(Textures[6]);
-    Assets[83].setPosition(Vector2f(80, 100));
+    Assets[83].setPosition(Vector2f(90, 100));
 
     Assets[84].setTexture(Textures[6]);
-    Assets[84].setPosition(Vector2f(110, 100));
+    Assets[84].setPosition(Vector2f(130, 100));
 }
 
 void Game::drawBackground(RenderWindow& window)
 {       
     
-    scoreText.setString(board->getScore());
-    window.draw(scoreText);
+    text[0].setString(board->getScore());
+    window.draw(text[0]);
     for (int x = 1; x < 85; x++)
     {
         window.draw(Assets[x]);
@@ -91,8 +117,13 @@ void Game::drawBackground(RenderWindow& window)
 
 void Game::GameUpdate(RenderWindow& window)
 {
+    LinkedList* spawner=new LinkedList(&window);
+    
     Object* Peach = new Mario(&window);
-    Object* Koppa = new Turtle(&window);
+    float a=1;
+    int b=1;
+    TurtleTime.restart();
+
     board = new ScoreBoard();
     while (window.isOpen())
     {
@@ -100,28 +131,75 @@ void Game::GameUpdate(RenderWindow& window)
         Event event;
         window.clear();
 
-        if (board->getLives() == 0)
+
+        //GAME END CONDITIONS
+        if (board->getLives() == 0 )
         {
-            gameOver.setString("GAMEOVER");
+            if (gameover = false)
+            {
+                delete Peach;
+            }
+            gameover = true;
+            text[1].setString("GAMEOVER");
+            text[1].setPosition(512 - text[1].getGlobalBounds().width / 2, 400);
+            window.draw(text[1]);
         }
         else if (board->getScore() == "00500")
         {
-            gameOver.setString("YOU WIN!");
+            if (gameover = false)
+            {
+                delete Peach;
+            }
+            gamewin = true;
+            text[1].setString("YOU WIN!");
+            text[1].setPosition(512 - text[1].getGlobalBounds().width / 2, 400);
+            window.draw(text[1]);
         }
 
-        if (board->getLives() != 0 || board->getScore() == "00500")
+        //Game Continues
+        if (gamestart)
         {
-             Koppa->update();
-             drawBackground(window);
-             Peach->update();
+            
+            if (TurtleTime.getElapsedTime().asSeconds() > 2 && !gameover && !gamewin)
+            {
+                turtleCount++;
+                if(turtleCount<6)
+                    spawner->insertTurtle(b, 1);
+                b = -b;
+                spawner->velocitySet(a);
+                a += 0.1;
+                TurtleTime.restart();
+            }
+            if(!gamewin && !gameover)
+                restartTime.restart();
+            spawner->drawAll();
+            drawBackground(window);
+            Peach->update();
+
+            onFloor(Peach);
+            Object* temp = spawner->head;
+            while (temp != nullptr)
+            {
+                checkCollusion(Peach, temp);
+                turtleCollusion(temp);
+                temp = temp->next;
+            }
+        }
+
+        if(gamewin || gameover)
+        {
+            if (restartTime.getElapsedTime().asSeconds() >= 3)
+            {
+                gamestart = false;
+                elapsedTime = 5;
+            }
         }
 
         if (window.pollEvent(event))
         {
-            // "close requested" event: we close the window
             if (event.type == sf::Event::Closed)
                 window.close();
-            if(event.type == Event::KeyReleased)
+            if (event.type == Event::KeyReleased)
             {
                 if (event.key.code == Keyboard::Right || event.key.code == Keyboard::Left)
                 {
@@ -129,17 +207,31 @@ void Game::GameUpdate(RenderWindow& window)
                 }
             }
         }
-        
-        if (board->getLives() == 0 || board->getScore() == "00500")
+        if (!gamestart && restartTime.getElapsedTime().asSeconds()+elapsedTime >= 5)
         {
-            window.draw(gameOver);
+            window.clear();
+            window.draw(text[2]);
+            window.draw(text[3]);
+            window.draw(Assets[86]);
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
+            {
+                spawner->destroyAll();
+                gameover = false;
+                gamewin = false;
+                score = 0;
+                turtleCount = 0;
+                gamestart = true;
+                elapsedTime = 0;
+                a = 1;
+                delete board;
+                Assets[82].setPosition(Vector2f(50, 100));
+                Assets[83].setPosition(Vector2f(90, 100));
+                Assets[84].setPosition(Vector2f(130, 100));
+                Peach = new Mario(&window);
+                board = new ScoreBoard();
+            }
         }
-        else
-        {
-            checkCollusion(Peach, Koppa, side);
-            onFloor(Peach);
-            turtleCollusion(Koppa);
-        }
+
         window.display();
 
     }
@@ -190,13 +282,13 @@ void Game::turtleCollusion(Object* obj)
 
         if (b.intersects(pipe3))
         {
-            obj->setVelocityX();
+            obj->setVelocityX(-1);
             obj->resetVelocity();
             obj->setPosition(Vector2f(940, WINDOW_HEIGHT - 846));
         }
         else if (b.intersects(pipe4))
         {
-            obj->setVelocityX();
+            obj->setVelocityX(-1);
             obj->setPosition(Vector2f(80, WINDOW_HEIGHT - 846));
         }
 
@@ -205,12 +297,12 @@ void Game::turtleCollusion(Object* obj)
             
             if (b.intersects(border_right))
             {
-                obj->setVelocityX();
+                obj->setVelocityX(-1);
                 obj->setPosition(Vector2f(border_right.left - b.width-10, obj->getPosition().y));
             }
             else if (b.intersects(border_left))
             {
-                obj->setVelocityX();
+                obj->setVelocityX(-1);
                 obj->setPosition(Vector2f(border_left.left + b.width + 10, obj->getPosition().y));
             }
 
@@ -231,7 +323,7 @@ void Game::turtleCollusion(Object* obj)
 
 }
 
-bool Game::checkCollusion(Object* m, Object* t, int& side)
+bool Game::checkCollusion(Object* m, Object* t)
 {
     FloatRect a = t->boundingBox();
     FloatRect b = m->boundingBox();
@@ -239,14 +331,14 @@ bool Game::checkCollusion(Object* m, Object* t, int& side)
     sf::FloatRect mario_down(b.left, b.top + b.height-20, b.width, 20);
     sf::FloatRect turtle_up(a.left, a.top, a.width, 20);
 
-    if (deadTime.getElapsedTime().asSeconds() > 0.3f && hitFlag)
+    if (deadTime.getElapsedTime().asSeconds() > 0.1f && hitFlag)
     {
         hitFlag = false;
     }
     if (mario_down.intersects(turtle_up) && !hitFlag)
     {
         t->fall();
-        side = 1; //turtle dead
+        m->turtleJump();
         hitFlag = true;
         score += 100;
         board->setScore(score);
@@ -256,14 +348,11 @@ bool Game::checkCollusion(Object* m, Object* t, int& side)
     else if (a.intersects(b) && !hitFlag)
     {
         m->fall();
-        side = 2; //mario dead
         Assets[81 + board->getLives()].setPosition(-500, -500);
         board->setLives(board->getLives()-1);
         hitFlag = true;
         deadTime.restart();
         return true;
     }
-    
-    side = 0;
     return false;
 }

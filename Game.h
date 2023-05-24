@@ -1,19 +1,29 @@
 #pragma once
 #include "Common.h"
 #include "Object.h"
+#include "Turtle.h"
 #include "ScoreBoard.h"
+#include "Linkedlist.h"
 
 class Game
 {
-	Sprite Assets[86];
-	Texture Textures[7];
+	Sprite Assets[88];
+	Texture Textures[9];
+	float elapsedTime;
 	bool hitFlag;
+	bool gamestart;
+	bool gamewin;
+	bool gameover;
+	int turtleCount;
 	Clock deadTime;
+	Clock restartTime;
+	Clock TurtleTime;
+	LinkedList* spawner;
 	int score;
 	int side;
-	Font font;
-	Text scoreText;
-	Text gameOver;
+	Font fontScore;
+	Font fontHead;
+	Text text[6];
 	ScoreBoard *board;
 public:
 	Game();
@@ -21,6 +31,7 @@ public:
 	void GameUpdate(RenderWindow& window);
 	void onFloor(Object* obj);
 	void turtleCollusion(Object* obj);
+	void spawnTurtle(void);
 	//bool hitFloor(Object* obj);
-	bool checkCollusion(Object* m, Object* t, int& side);
+	bool checkCollusion(Object* m, Object* t);
 };

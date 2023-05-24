@@ -2,13 +2,15 @@
 
 ScoreBoard::ScoreBoard()
 {
-	lives = 3;
+	lives = LIVES;
 	score = "00000";
 }
 
 void ScoreBoard::setScore(int score)
 {
-	String str = "00"+std::to_string(score);
+	String str;
+	str = "00" + std::to_string(score);
+
 	this->score = str;
 }
 

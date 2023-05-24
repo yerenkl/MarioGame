@@ -1,21 +1,26 @@
+#pragma once
 #include "Turtle.h"
 
-Turtle::Turtle(RenderWindow* window) : Object(window)
+Turtle::Turtle(RenderWindow* window,int heading=1,float vx=TURTLE_SPEED) : Object(window)
 {
     vy = 0;
     frame = 7;
     sprite.setTexture(textures[frame]);
-    pos = Vector2f(500,500);
+    if(heading==1) //which pipe to spawn
+        pos = Vector2f(80,250);
+    else
+        pos= Vector2f(870, 250);
     sprite.setPosition(pos);
     animationTimer.restart();
-    heading = -1;
-    vx = heading*TURTLE_SPEED;
+    this->heading = heading;
+    this->vx = heading*vx;
     clock.restart();
 }
 
-
 void Turtle::fall(void)
 {
+    frame = 11;
+    sprite.setTexture(textures[frame]);
     dead = true;
     vx = 0;
     vy = 10;
@@ -51,8 +56,7 @@ void Turtle::update()
             clock.restart();
         }
     }
-    
-    draw(*window);
+    draw();
 }
 
 void Turtle::updatePhysics()

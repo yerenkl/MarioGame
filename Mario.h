@@ -7,8 +7,8 @@ class Mario :
 	float acc;
 	int lives;
 public:
+	Mario(RenderWindow* window);
 	void update();
-	Mario(sf::RenderWindow* window);
 private:
 	void move(const float dir_x, const float dir_y);
 	void updateMove();

@@ -13,7 +13,7 @@ Mario::Mario(sf::RenderWindow* window) : Object(window)
     g = GRAVITY;
     pos = Vector2f(510, 700);
     sprite.setTexture(textures[0]);
-    setPosition(pos);
+    sprite.setPosition(pos);
     lives = 3;
 }
 
@@ -128,7 +128,7 @@ void Mario::update()
     }
     updatePhysics();
     animationUpdate();
-    draw(*window);
+    draw();
 } 
 
 void Mario::animationUpdate()

@@ -5,6 +5,7 @@ class Object
 {
 public:
 	bool dead;
+	Object* next;
 protected:
 	RenderWindow* window;
 	Texture textures[14];
@@ -21,12 +22,13 @@ protected:
 public:
 	Object(RenderWindow* window); //Constructor
 	void setPosition(Vector2f pos);
-	void setVelocityX(void);//Sets position of the object
+	void setVelocityX(float k);//Sets position of the object
+	void turtleJump(void);
 	Vector2f getPosition(); //Gets position of the object-
 	sf::FloatRect boundingBox(void);
 	void resetVelocity();
 	void resetVelocityFall();
-	void draw(RenderWindow& window);//Draws current the object texture to screen
+	void draw(void);//Draws current the object texture to screen
 	void move(int direction) {}; //Abstract method that will be overridden
 	virtual void jump(const float dir_x, const float dir_y) {}; //Abstract method that will be overridden
 	virtual void fall(void) {};
