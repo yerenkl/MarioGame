@@ -33,13 +33,14 @@ void Object::setVelocityX(float k)
 		vx = k * vx;
 		heading = -heading;
 	}
+
 	else
 	{
-		if (vx < 0)
+		if (vx < 0 && vx>-k)
 		{
 			vx = -k;
 		}
-		else
+		else if(k>vx)
 		{
 			vx = k;
 		}
@@ -66,7 +67,8 @@ void Object::resetVelocity()
 {
 	if (!dead)
 	{
-		vy = 0;
+		if(vy>0)
+			vy = 0;
 		isJumping = false;
 	}
 }

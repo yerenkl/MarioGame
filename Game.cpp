@@ -7,25 +7,29 @@
 
 Game::Game()
 {   
-    turtleCount = 0;
-    gamewin = false;
+    turtleCount = 0; //number of spawned turtle
+    gamewin = false; 
     gameover = false;
-    elapsedTime = 5;
-    gamestart = false;
-    score = 0;
-    fontScore.loadFromFile("./assets/font.ttf");
-    fontHead.loadFromFile("./assets/04B_30__.TTF");
     hitFlag = false;
-    text[0].setFont(fontScore);
+    gamestart = false; //start screen or game screen
+
+    elapsedTime = 5; //initial game start time
+    score = 0;
+
+    fonts[0].loadFromFile("./assets/font.ttf");
+    fonts[1].loadFromFile("./assets/04B_30__.TTF");
+    
+    turtlehitFlag = false;
+    text[0].setFont(fonts[0]);
     text[0].setPosition(50, 50);
-    text[1].setFont(fontScore);
+    text[1].setFont(fonts[0]);
     text[1].setScale(2.f, 2.f);
-    text[2].setFont(fontHead);
+    text[2].setFont(fonts[1]);
     text[2].setString("Press Enter!");
     text[2].setScale(1.5f, 1.5f);
     text[2].setFillColor(sf::Color::White);
     text[2].setPosition(512- text[2].getGlobalBounds().width / 2, 350);
-    text[3].setFont(fontHead);
+    text[3].setFont(fonts[1]);
     text[3].setString("SUPER MARIO");
     text[3].setScale(2.5f, 2.5f);
     text[3].setPosition(512-text[3].getGlobalBounds().width/2, 250);
@@ -160,28 +164,44 @@ void Game::GameUpdate(RenderWindow& window)
         if (gamestart)
         {
             
-            if (TurtleTime.getElapsedTime().asSeconds() > 2 && !gameover && !gamewin)
+            if (TurtleTime.getElapsedTime().asSeconds() > 3 && !gameover && !gamewin)
             {
                 turtleCount++;
                 if(turtleCount<6)
                     spawner->insertTurtle(b, 1);
                 b = -b;
-                spawner->velocitySet(a);
-                a += 0.1;
                 TurtleTime.restart();
             }
+            spawner->velocitySet(a);
+            a += 0.001;
             if(!gamewin && !gameover)
                 restartTime.restart();
             spawner->drawAll();
             drawBackground(window);
             Peach->update();
 
-            onFloor(Peach);
+            int x=onFloor(Peach);
             Object* temp = spawner->head;
             while (temp != nullptr)
             {
+                Object* temp2 = temp->next;
+                while (temp2 != nullptr)
+                {
+
+                    Turtle* turtle1 = dynamic_cast<Turtle*>(temp);
+                    Turtle* turtle2 = dynamic_cast<Turtle*>(temp2);
+                    // Check for collision between temp1 and temp2 turtles
+                    if (turtleCollusion(turtle1, turtle2))
+                    {
+                        turtle1->surprised();
+                        turtle2->surprised();
+                    }
+                    isturtleOn(turtle1, x);
+                    temp2 = temp2->next;
+                }
+
                 checkCollusion(Peach, temp);
-                turtleCollusion(temp);
+                turtleFloor(temp);
                 temp = temp->next;
             }
         }
@@ -237,29 +257,32 @@ void Game::GameUpdate(RenderWindow& window)
     }
 }
 
-void Game::onFloor(Object* obj)
+int Game::onFloor(Object* obj)
 {
     for (int x = 5; x < 81; x++) {
         FloatRect a = Assets[x].getGlobalBounds();
         FloatRect b = obj->boundingBox();
+
         sf::FloatRect b_up(b.left, b.top, b.width, 10);
         sf::FloatRect b_down(b.left, b.top + b.height, b.width, 10);
         if (a.intersects(b_down))
         {
             obj->resetVelocity();
             obj->setPosition(Vector2f(obj->getPosition().x,a.top-b.height));
-
+            
         }
-        else if (a.intersects(b_up))
+        else if (a.intersects(b_up) && !obj->dead)
         {
             obj->setPosition(Vector2f(obj->getPosition().x, a.top + a.height));
             obj->resetVelocityFall();
+            return x;
             
         }
     }
+    return 0;
 }
 
-void Game::turtleCollusion(Object* obj)
+void Game::turtleFloor(Object* obj)
 {
     sf::FloatRect border_right(1014, 0, 10, 800);
     sf::FloatRect border_left(0, 0, 10, 800);
@@ -323,6 +346,33 @@ void Game::turtleCollusion(Object* obj)
 
 }
 
+bool Game::turtleCollusion(Turtle* obj1, Turtle* obj2)
+{
+    FloatRect a = obj1->boundingBox();
+    FloatRect b = obj2->boundingBox();
+
+    sf::FloatRect turtle1Left(a.left, a.top, 10, a.height);
+    sf::FloatRect turtle1Right(a.left+a.width-10, a.top, 10, a.height);
+
+    sf::FloatRect turtle2Left(b.left, b.top, 10, b.height);
+    sf::FloatRect turtle2Right(b.left + b.width - 10, b.top, 10, b.height);
+    if (turtlehitTime.getElapsedTime().asSeconds() > 2.f && obj1->collusion)
+    {
+        obj1->collusion = false;
+    }
+
+    if ((turtle1Left.intersects(turtle2Right) || turtle2Left.intersects(turtle1Right)) && !obj1->collusion && !obj1->dead && !obj2->dead)
+    {
+        obj1->collusion = true;
+
+        obj1->setVelocityX(-1);
+        obj2->setVelocityX(-1);
+        turtlehitTime.restart();
+        return true;
+    }
+    return false;
+}
+
 bool Game::checkCollusion(Object* m, Object* t)
 {
     FloatRect a = t->boundingBox();
@@ -331,28 +381,32 @@ bool Game::checkCollusion(Object* m, Object* t)
     sf::FloatRect mario_down(b.left, b.top + b.height-20, b.width, 20);
     sf::FloatRect turtle_up(a.left, a.top, a.width, 20);
 
-    if (deadTime.getElapsedTime().asSeconds() > 0.1f && hitFlag)
-    {
-        hitFlag = false;
-    }
-    if (mario_down.intersects(turtle_up) && !hitFlag)
+    if (mario_down.intersects(turtle_up) && !m->dead)
     {
         t->fall();
         m->turtleJump();
-        hitFlag = true;
         score += 100;
         board->setScore(score);
         deadTime.restart();
         return true;
     }
-    else if (a.intersects(b) && !hitFlag)
+    else if (a.intersects(b) && !m->dead)
     {
         m->fall();
         Assets[81 + board->getLives()].setPosition(-500, -500);
         board->setLives(board->getLives()-1);
-        hitFlag = true;
         deadTime.restart();
         return true;
     }
     return false;
+}
+
+void Game::isturtleOn(Turtle* obj1,int x)
+{
+    FloatRect a = Assets[x].getGlobalBounds();
+    FloatRect b = obj1->boundingBox();
+    if (a.intersects(b))
+    {
+        obj1->vulnerable();
+    }
 }

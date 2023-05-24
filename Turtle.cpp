@@ -3,7 +3,10 @@
 
 Turtle::Turtle(RenderWindow* window,int heading=1,float vx=TURTLE_SPEED) : Object(window)
 {
+    isVulnerable = false;
     vy = 0;
+    stop = false;
+    collusion = false;
     frame = 7;
     sprite.setTexture(textures[frame]);
     if(heading==1) //which pipe to spawn
@@ -26,10 +29,47 @@ void Turtle::fall(void)
     vy = 10;
 }
 
+void Turtle::vulnerable(void)
+{
+    vy = -10.8;
+    frame = 11;
+    sprite.setTexture(textures[frame]);
+    if (!isVulnerable)
+    {
+        isVulnerable = true;
+        vulnerableTime.restart();
+    }
+    else 
+    {
+        isVulnerable = false;
+        vulnerableTime.restart();
+    }
+    
+}
+
 void Turtle::update()
 {
-    updatePhysics();
-    if (!dead)
+    
+    if (stop && !isVulnerable)
+    {
+        sprite.setTexture(textures[frame]);
+        if(surpriseTime.getElapsedTime().asSeconds()>0.5)
+        {
+            stop = false;
+            frame = 7;
+        }
+    }
+    else
+    {
+        updatePhysics();
+    }
+
+    if(isVulnerable && vulnerableTime.getElapsedTime().asSeconds()>8)
+    {
+        isVulnerable = false;
+    }
+
+    if (!dead && !isVulnerable)
     {
         Vector2f position;
         float elapsed1 = clock.getElapsedTime().asSeconds();
@@ -56,15 +96,28 @@ void Turtle::update()
             clock.restart();
         }
     }
+    
     draw();
+}
+
+void Turtle::surprised(void)
+{
+    stop = true;
+    frame = 10;
+    surpriseTime.restart();
 }
 
 void Turtle::updatePhysics()
 {
-    vy += GRAVITY;
+    vy += 0.5;
+    
     if (vy > VELOCITY_Y && !dead)
     {
         vy = VELOCITY_Y;
     }
-    sprite.move(Vector2f(vx, vy));
+    if (isVulnerable)
+        sprite.move(Vector2f(0, vy));
+    
+    else
+        sprite.move(Vector2f(vx, vy));
 }

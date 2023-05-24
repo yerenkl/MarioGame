@@ -11,6 +11,6 @@ using namespace sf;
 #define LIVES 3
 #define VELOCITY_Y 14
 #define VELOCITY_X 4
-#define TURTLE_SPEED 1
+#define TURTLE_SPEED 1.2
 #define ACCELERATION 1
 #define GRAVITY 0.4

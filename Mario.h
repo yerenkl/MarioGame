@@ -6,6 +6,8 @@ class Mario :
 	float g;
 	float acc;
 	int lives;
+	bool isRunning;
+	Clock slideTime;
 public:
 	Mario(RenderWindow* window);
 	void update();
