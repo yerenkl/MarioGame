@@ -33,14 +33,13 @@ void Object::setVelocityX(float k)
 		vx = k * vx;
 		heading = -heading;
 	}
-
 	else
 	{
-		if (vx < 0 && vx>-k)
+		if (vx < 0)
 		{
 			vx = -k;
 		}
-		else if(k>vx)
+		else
 		{
 			vx = k;
 		}

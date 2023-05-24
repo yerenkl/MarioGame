@@ -31,17 +31,12 @@ void Turtle::fall(void)
 
 void Turtle::vulnerable(void)
 {
-    vy = -10.8;
-    frame = 11;
-    sprite.setTexture(textures[frame]);
     if (!isVulnerable)
     {
         isVulnerable = true;
-        vulnerableTime.restart();
-    }
-    else 
-    {
-        isVulnerable = false;
+        frame = 11;
+        sprite.setTexture(textures[frame]);
+        vy = -10.8;
         vulnerableTime.restart();
     }
     

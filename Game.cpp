@@ -10,7 +10,6 @@ Game::Game()
     turtleCount = 0; //number of spawned turtle
     gamewin = false; 
     gameover = false;
-    hitFlag = false;
     gamestart = false; //start screen or game screen
 
     elapsedTime = 5; //initial game start time
@@ -19,7 +18,6 @@ Game::Game()
     fonts[0].loadFromFile("./assets/font.ttf");
     fonts[1].loadFromFile("./assets/04B_30__.TTF");
     
-    turtlehitFlag = false;
     text[0].setFont(fonts[0]);
     text[0].setPosition(50, 50);
     text[1].setFont(fonts[0]);
@@ -27,14 +25,12 @@ Game::Game()
     text[2].setFont(fonts[1]);
     text[2].setString("Press Enter!");
     text[2].setScale(1.5f, 1.5f);
-    text[2].setFillColor(sf::Color::White);
     text[2].setPosition(512- text[2].getGlobalBounds().width / 2, 350);
     text[3].setFont(fonts[1]);
     text[3].setString("SUPER MARIO");
     text[3].setScale(2.5f, 2.5f);
     text[3].setPosition(512-text[3].getGlobalBounds().width/2, 250);
     text[3].setFillColor(sf::Color::Red);
-    deadTime.restart();
     Textures[0].loadFromFile("./assets/brick.png");
     Assets[0].setTexture(Textures[0]);
 
@@ -381,7 +377,8 @@ bool Game::checkCollusion(Object* m, Object* t)
     sf::FloatRect mario_down(b.left, b.top + b.height-20, b.width, 20);
     sf::FloatRect turtle_up(a.left, a.top, a.width, 20);
 
-    if (mario_down.intersects(turtle_up) && !m->dead)
+
+    if (mario_down.intersects(turtle_up) && !m->dead && !t->dead)
     {
         t->fall();
         m->turtleJump();
@@ -390,7 +387,7 @@ bool Game::checkCollusion(Object* m, Object* t)
         deadTime.restart();
         return true;
     }
-    else if (a.intersects(b) && !m->dead)
+    else if (a.intersects(b) && !m->dead && !t->dead)
     {
         m->fall();
         Assets[81 + board->getLives()].setPosition(-500, -500);
