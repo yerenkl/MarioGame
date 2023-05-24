@@ -17,7 +17,6 @@ protected:
 	int frame;
 	int heading;
 	bool isJumping;
-	sf::Clock clock;
 	Clock animationTimer;
 public:
 	Object(RenderWindow* window); //Constructor
@@ -29,7 +28,6 @@ public:
 	void resetVelocity();
 	void resetVelocityFall();
 	void draw(void);//Draws current the object texture to screen
-	void move(int direction) {}; //Abstract method that will be overridden
 	virtual void jump(const float dir_x, const float dir_y) {}; //Abstract method that will be overridden
 	virtual void fall(void) {};
 	virtual void update(void) {};

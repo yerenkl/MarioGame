@@ -3,6 +3,7 @@
 #include <sfml/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <string>
+
 using namespace std;
 using namespace sf;
 

@@ -1,7 +1,7 @@
 #pragma once
 #include "Mario.h"
 
-enum ANIMATIONS { IDLE = 0, LEFT, RIGHT, JUMP ,FALL, SLIDE};
+enum STATES { IDLE = 0, LEFT, RIGHT, JUMP ,FALL, SLIDE};
 
 Mario::Mario(sf::RenderWindow* window) : Object(window)
 {
@@ -15,7 +15,6 @@ Mario::Mario(sf::RenderWindow* window) : Object(window)
     pos = Vector2f(510, 700);
     sprite.setTexture(textures[0]);
     sprite.setPosition(pos);
-    lives = 3;
 }
 
 void Mario::animationReset()
@@ -66,7 +65,6 @@ void Mario::fall(void)
         state = FALL;
         frame = 6;
         sprite.setTexture(textures[frame]);
-        lives--;
         animationTimer.restart();
         dead = true;
     }

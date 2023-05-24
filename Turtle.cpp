@@ -1,28 +1,29 @@
 #pragma once
 #include "Turtle.h"
 
+enum STATES { MOVE = 0, VULNERABLE, SURPRISE, FALL};
+
 Turtle::Turtle(RenderWindow* window,int heading=1,float vx=TURTLE_SPEED) : Object(window)
 {
-    isVulnerable = false;
     vy = 0;
-    stop = false;
     collusion = false;
     frame = 7;
+    state = MOVE;
     sprite.setTexture(textures[frame]);
     if(heading==1) //which pipe to spawn
         pos = Vector2f(80,250);
     else
         pos= Vector2f(870, 250);
     sprite.setPosition(pos);
-    animationTimer.restart();
     this->heading = heading;
     this->vx = heading*vx;
-    clock.restart();
+    animationTimer.restart();
 }
 
 void Turtle::fall(void)
 {
     frame = 11;
+    state = FALL;
     sprite.setTexture(textures[frame]);
     dead = true;
     vx = 0;
@@ -31,9 +32,9 @@ void Turtle::fall(void)
 
 void Turtle::vulnerable(void)
 {
-    if (!isVulnerable)
+    if (state!=VULNERABLE)
     {
-        isVulnerable = true;
+        state = VULNERABLE;
         frame = 11;
         sprite.setTexture(textures[frame]);
         vy = -10.8;
@@ -44,13 +45,12 @@ void Turtle::vulnerable(void)
 
 void Turtle::update()
 {
-    
-    if (stop && !isVulnerable)
+    if (state==SURPRISE)
     {
         sprite.setTexture(textures[frame]);
         if(surpriseTime.getElapsedTime().asSeconds()>0.5)
         {
-            stop = false;
+            state=MOVE;
             frame = 7;
         }
     }
@@ -59,15 +59,15 @@ void Turtle::update()
         updatePhysics();
     }
 
-    if(isVulnerable && vulnerableTime.getElapsedTime().asSeconds()>8)
+    if(state==VULNERABLE && vulnerableTime.getElapsedTime().asSeconds()>8)
     {
-        isVulnerable = false;
+        state = MOVE;
     }
 
-    if (!dead && !isVulnerable)
+    if (state==MOVE)
     {
         Vector2f position;
-        float elapsed1 = clock.getElapsedTime().asSeconds();
+        float elapsed1 = animationTimer.getElapsedTime().asSeconds();
         position = sprite.getPosition();
         if (heading == 1) {
             sprite.setOrigin(sprite.getLocalBounds().width / 2.f, 0.f);
@@ -88,7 +88,7 @@ void Turtle::update()
             {
                 frame = 7;
             }
-            clock.restart();
+            animationTimer.restart();
         }
     }
     
@@ -97,20 +97,23 @@ void Turtle::update()
 
 void Turtle::surprised(void)
 {
-    stop = true;
-    frame = 10;
-    surpriseTime.restart();
+    if (state != VULNERABLE)
+    {
+        state = SURPRISE;
+        frame = 10;
+        surpriseTime.restart();
+    }
 }
 
 void Turtle::updatePhysics()
 {
     vy += 0.5;
     
-    if (vy > VELOCITY_Y && !dead)
+    if (vy > VELOCITY_Y && state!=FALL)
     {
         vy = VELOCITY_Y;
     }
-    if (isVulnerable)
+    if (state==VULNERABLE)
         sprite.move(Vector2f(0, vy));
     
     else

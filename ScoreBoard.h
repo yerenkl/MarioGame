@@ -2,7 +2,7 @@
 #include "Common.h"
 class ScoreBoard
 {
-	string score; //Current score
+	string score; //Current score in string
 	int lives; //Remaining life count for Mario
 public:
 	ScoreBoard();
