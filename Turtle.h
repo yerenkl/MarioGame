@@ -3,21 +3,17 @@
 class Turtle :
 	public Object
 {
-public:
 	Clock surpriseTime;
 	Clock vulnerableTime;
-	bool isVulnerable;
-	bool stop;
+	void update(void);
+	void updatePhysics();
+	void animationReset() {};
+	void jump(const float dir_x, const float dir_y) {};
+public:
 	bool collusion;
 	Turtle(RenderWindow* window, int heading, float t_v);
-	void jump(const float dir_x, const float dir_y) {}; //Abstract method that will be overridden
 	void fall(void);
-	void update(void);
 	void surprised(void);
-	void updatePhysics();
-	void updateMove();
-	void animationReset() {};
 	void vulnerable(void);
-	
 };
 

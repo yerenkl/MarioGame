@@ -17,7 +17,7 @@ public:
 
     void insertTurtle(int heading, float t_v)
     {
-       
+       //Creates a new turtle object
         Object* newTurtle = new Turtle(window, heading, t_v);
         
         if (head == nullptr)
@@ -40,6 +40,7 @@ public:
 
     void drawAll()
     {
+        //Draws all turtles to the window
         Object* temp = head;
         
         while (temp != nullptr)
@@ -51,6 +52,7 @@ public:
 
     int elementNumber()
     {
+        //returns the number of turtle objects
         int n=0;
         Object* temp = head;
 
@@ -64,6 +66,7 @@ public:
 
     void velocitySet(float k)
     {
+        //sets the velocity of the turtles
         Object* temp = head;
 
         while (temp != nullptr)
@@ -75,6 +78,7 @@ public:
 
     void destroyAll()
     {
+        //Destroy all turtle objects
         Object* temp = head;
         while (temp != nullptr)
         {

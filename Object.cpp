@@ -28,11 +28,14 @@ void Object::setPosition(sf::Vector2f pos)
 
 void Object::setVelocityX(float k)
 {
+	/*If k is bigger than 0 sets velocity to that value
+	Otherwise, changes the direction.*/
 	if (k < 0)
 	{
 		vx = k * vx;
 		heading = -heading;
 	}
+
 	else
 	{
 		if (vx < 0)
@@ -64,6 +67,8 @@ FloatRect Object::boundingBox(void)
 
 void Object::resetVelocity()
 {
+	/*Resets vertical velocity to the zero. Called when object collided to
+	the floor*/
 	if (!dead)
 	{
 		if(vy>0)
@@ -74,11 +79,13 @@ void Object::resetVelocity()
 
 void Object::resetVelocityFall()
 {
+	/*Resets velocity when Mario hits the floor with his head.*/
 	if(!dead)
 		vy = 0;
 }
 
 void Object::turtleJump()
 {
+	//When Mario hits on a turtle, he jumps a bit back.
 	vy = -5;
 }

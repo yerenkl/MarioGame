@@ -22,6 +22,7 @@ Turtle::Turtle(RenderWindow* window,int heading=1,float vx=TURTLE_SPEED) : Objec
 
 void Turtle::fall(void)
 {
+    //Turtle falls straight 
     frame = 11;
     state = FALL;
     sprite.setTexture(textures[frame]);
@@ -32,6 +33,7 @@ void Turtle::fall(void)
 
 void Turtle::vulnerable(void)
 {
+    //Turtle jumps up and after reached the ground stay straight for 8 seconds.
     if (state!=VULNERABLE)
     {
         state = VULNERABLE;
@@ -45,6 +47,7 @@ void Turtle::vulnerable(void)
 
 void Turtle::update()
 {
+    //Updates movements of turtle
     if (state==SURPRISE)
     {
         sprite.setTexture(textures[frame]);
@@ -97,6 +100,7 @@ void Turtle::update()
 
 void Turtle::surprised(void)
 {
+    //Called when turtle is collided with another turtle
     if (state != VULNERABLE)
     {
         state = SURPRISE;
@@ -107,6 +111,7 @@ void Turtle::surprised(void)
 
 void Turtle::updatePhysics()
 {
+    //Updates gravitional forces on turtle
     vy += 0.5;
     
     if (vy > VELOCITY_Y && state!=FALL)

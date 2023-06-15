@@ -19,6 +19,7 @@ Mario::Mario(sf::RenderWindow* window) : Object(window)
 
 void Mario::animationReset()
 {
+    //Resets animation when buttons released
     vx = 0;
     if (isRunning && !isJumping && !dead) {
         isRunning = false;
@@ -31,7 +32,7 @@ void Mario::animationReset()
 
 void Mario::move(const float dir_x, const float dir_y)
 {
-    //Acceleration
+    //Makes Mario move horizontally, dir_x=direction on x
     vx += dir_x*acc;
     
     if(dir_y)
@@ -46,7 +47,7 @@ void Mario::move(const float dir_x, const float dir_y)
 
 void Mario::jump(const float dir_x, const float dir_y)
 {
-    //Acceleration
+    //Makes Mario jump
     vx += dir_x * 3;
 
     vy = -VELOCITY_Y;
@@ -59,6 +60,7 @@ void Mario::jump(const float dir_x, const float dir_y)
 
 void Mario::fall(void)
 {
+    //Mario falls of the screen
     if (state!= FALL)
     {
         vy = VELOCITY_Y;
@@ -72,6 +74,7 @@ void Mario::fall(void)
 
 void Mario::updateMove()
 {
+    //Calls the necessary movement functions (move or jump) based on buttons.
     if(!isJumping)
         state = IDLE;
 
@@ -125,6 +128,7 @@ void Mario::updateMove()
 
 void Mario::updatePhysics()
 {
+    //Applies gravitational forces to the Mario.
     vy += g;
     if (vy > VELOCITY_Y && dead)
     {
@@ -139,6 +143,7 @@ void Mario::updatePhysics()
 
 void Mario::update()
 {   
+    //Updates Mario’s movement, physics and animations.
     if (state != FALL)
     {
         updateMove();
@@ -150,7 +155,7 @@ void Mario::update()
 
 void Mario::animationUpdate()
 {
-
+    //Updates Mario's animations
     sprite.setOrigin(sprite.getLocalBounds().width / 2.f, 0.f);
     
     if (state == IDLE)

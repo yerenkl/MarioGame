@@ -1,0 +1,47 @@
+﻿  Main.cpp
+  Game.cpp
+C:\Users\Yusuf\Desktop\6128497\Game.cpp(78,48): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Yusuf\Desktop\6128497\Game.cpp(82,47): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Yusuf\Desktop\6128497\Game.cpp(83,49): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Yusuf\Desktop\6128497\Game.cpp(87,55): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Yusuf\Desktop\6128497\Game.cpp(88,48): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Yusuf\Desktop\6128497\Game.cpp(92,49): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Yusuf\Desktop\6128497\Game.cpp(93,48): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Yusuf\Desktop\6128497\Game.cpp(127,25): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\Yusuf\Desktop\6128497\Game.cpp(177,23): warning C4305: '+=': truncation from 'double' to 'float'
+  Mario.cpp
+C:\Users\Yusuf\Desktop\6128497\Mario.cpp(14,16): warning C4305: '=': truncation from 'double' to 'float'
+  Object.cpp
+  ScoreBoard.cpp
+  Turtle.cpp
+C:\Users\Yusuf\Desktop\6128497\Turtle.cpp(42,19): warning C4305: '=': truncation from 'double' to 'float'
+  Generating Code...
+  mariomaker.vcxproj -> C:\Users\Yusuf\Desktop\6128497\Debug\mariomaker.exe
